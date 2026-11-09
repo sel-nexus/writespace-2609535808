@@ -98,10 +98,10 @@ test('admin login, edit/save, cancellation, confirmed delete and quick actions p
   await overview(page);
   await expect(page.getByRole('link', { name: 'Manage Users' })).toHaveAttribute('href', '/users');
   await page.getByRole('link', { name: 'Manage Users' }).click();
-  // Users is a later slice: existing unknown-route fallback returns to public discovery.
-  await expect(page).toHaveURL(/\/$/);
+  await expect(page).toHaveURL(/\/users$/);
+  await expect(page.getByRole('heading', { name: 'User Management' })).toBeVisible();
   expect(await records(page)).toEqual(remaining);
-  await page.getByRole('link', { name: 'Go to Dashboard' }).click();
+  await overview(page);
   await expect(metric(page, 'Total Posts')).toHaveText('5');
 });
 
