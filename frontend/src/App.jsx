@@ -6,6 +6,7 @@ import RegisterPage from './features/auth/RegisterPage.jsx';
 import Home from './features/blog/Home.jsx';
 import ReadBlog from './features/blog/ReadBlog.jsx';
 import WriteBlog from './features/blog/WriteBlog.jsx';
+import AdminDashboard from './features/admin/AdminDashboard.jsx';
 import { ProtectedRoute } from './components/ProtectedRoute.jsx';
 import { Navbar } from './components/Navbar.jsx';
 
@@ -65,6 +66,14 @@ export default function App() {
             <>
               <Navbar />
               <WriteBlog />
+            </>
+          </ProtectedRoute>
+        } />
+        <Route path="/admin" element={
+          <ProtectedRoute requiredRole="admin">
+            <>
+              <Navbar />
+              <AdminDashboard />
             </>
           </ProtectedRoute>
         } />
