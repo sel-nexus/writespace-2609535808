@@ -7,7 +7,7 @@ import Home from './Home.jsx';
 import BlogCard from './BlogCard.jsx';
 import ReadBlog from './ReadBlog.jsx';
 import App from '../../App.jsx';
-import { getPosts, setPosts, POSTS_KEY } from '../../utils/storage.js';
+import { getPosts, setPosts, setUsers, POSTS_KEY, USERS_KEY } from '../../utils/storage.js';
 import { setSession, SESSION_KEY } from '../../utils/auth.js';
 
 const owner = { userId: 'one', username: 'writer', displayName: 'Writer', role: 'user' };
@@ -98,6 +98,29 @@ it('card handles short content, invalid date, default props and built-in admin a
   expect(screen.getByRole('img', { name: 'Admin avatar' })).toBeInTheDocument();
   expect(screen.queryByRole('link', { name: /Edit/ })).not.toBeInTheDocument();
 });
+for (const path of ['/blogs', '/blog/note']) {
+  it.each([
+    ['generated-id admin', '9e750c74-8e57-4e0c-9e9e-6bd414a932a0', 'admin', 'Admin avatar'],
+    ['stored regular user', 'one', 'user', 'User avatar'],
+    ['unknown author', 'unknown', null, 'User avatar'],
+    ['deleted admin', 'deleted', 'deleted', 'User avatar'],
+    ['built-in admin before stored role', 'admin', 'user', 'Admin avatar'],
+  ])(path + ' resolves %s attribution from current accounts without writes', (_label, authorId, role, avatar) => {
+    setUsers(role === null ? [] : [{ id: authorId, role: role === 'deleted' ? 'admin' : role }]);
+    if (role === 'deleted') setUsers([]);
+    setPosts([{ ...post, authorId }]);
+    const rawPosts = localStorage.getItem(POSTS_KEY);
+    const rawUsers = localStorage.getItem(USERS_KEY);
+    const write = vi.spyOn(Storage.prototype, 'setItem');
+    mount(path);
+    const article = screen.getByRole('article');
+    expect(within(article).getByRole('img', { name: avatar })).toBeInTheDocument();
+    expect(within(article).getByText(post.authorName)).toBeInTheDocument();
+    expect(localStorage.getItem(POSTS_KEY)).toBe(rawPosts);
+    expect(localStorage.getItem(USERS_KEY)).toBe(rawUsers);
+    expect(write).not.toHaveBeenCalled();
+  });
+}
 it('detail preserves full whitespace and escaping and links edit/back with visible focus', () => {
   mount();
   const content = screen.getByRole('article').querySelector('p.whitespace-pre-wrap');

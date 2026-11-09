@@ -7,14 +7,20 @@ const post = {
   authorId: 'one', authorName: 'Writer',
 };
 
-/** Seed real local records once, never restoring them during reload. */
-async function seed(page, identity = session) {
-  await page.addInitScript(({ identity, post }) => {
+/**
+ * Seed real local records once, never restoring them during reload.
+ * Args:
+ *   page: Browser page receiving the initial records before navigation.
+ *   identity: Local reader allowed to enter writing routes.
+ *   posts: Initial committed posts, including an empty collection for the Home invitation.
+ */
+async function seed(page, identity = session, posts = [post]) {
+  await page.addInitScript(({ identity, posts }) => {
     if (sessionStorage.getItem('writing-seeded')) return;
     localStorage.setItem('writespace_session', JSON.stringify(identity));
-    localStorage.setItem('writespace_posts', JSON.stringify([post]));
+    localStorage.setItem('writespace_posts', JSON.stringify(posts));
     sessionStorage.setItem('writing-seeded', 'true');
-  }, { identity, post });
+  }, { identity, posts });
 }
 
 /** Read actual committed records rather than treating rendered text as storage. */
@@ -71,6 +77,48 @@ test('register, publish, reload, edit and cancel preserve actual records', async
   await page.getByRole('button', { name: 'Cancel' }).click();
   await expect(page).toHaveURL(/\/blogs$/);
   expect(await records(page)).toEqual([revised]);
+});
+
+test('named card Edit link preloads the owner post without saving on entry or input', async ({ page }) => {
+  await seed(page);
+  await page.goto('/blogs');
+  const raw = await page.evaluate(() => localStorage.getItem('writespace_posts'));
+  expect(await records(page)).toEqual([post]);
+  await page.getByRole('article').getByRole('link', { name: 'Edit Original story', exact: true }).click();
+  await expect(page).toHaveURL(/\/edit\/note$/);
+  await expect(page.getByLabel('Title', { exact: true })).toHaveValue(post.title);
+  await expect(page.getByLabel('Content', { exact: true })).toHaveValue(post.content);
+  expect(await page.evaluate(() => localStorage.getItem('writespace_posts'))).toBe(raw);
+  await fill(page, 'Card revision', 'Changed through card edit');
+  expect(await records(page)).toEqual([post]);
+  expect(await page.evaluate(() => localStorage.getItem('writespace_posts'))).toBe(raw);
+  await page.getByRole('button', { name: 'Save Changes' }).click();
+  await expect(page).toHaveURL(/\/blog\/note$/);
+  expect(await records(page)).toEqual([{ ...post, title: 'Card revision', content: 'Changed through card edit' }]);
+});
+
+test('empty Home main Write invitation opens a blank form without saving before publish', async ({ page }) => {
+  await seed(page, session, []);
+  await page.goto('/blogs');
+  const raw = await page.evaluate(() => localStorage.getItem('writespace_posts'));
+  expect(await records(page)).toEqual([]);
+  const main = page.getByRole('main');
+  await expect(main.getByText('No blogs yet. Be the first to write one!')).toBeVisible();
+  await main.getByRole('link', { name: 'Write', exact: true }).click();
+  await expect(page).toHaveURL(/\/write$/);
+  await expect(page.getByLabel('Title', { exact: true })).toHaveValue('');
+  await expect(page.getByLabel('Content', { exact: true })).toHaveValue('');
+  expect(await page.evaluate(() => localStorage.getItem('writespace_posts'))).toBe(raw);
+  await fill(page, 'First Home story', 'Published from the empty invitation');
+  expect(await records(page)).toEqual([]);
+  expect(await page.evaluate(() => localStorage.getItem('writespace_posts'))).toBe(raw);
+  await page.getByRole('button', { name: 'Publish Post' }).click();
+  const saved = (await records(page))[0];
+  expect(saved).toMatchObject({
+    title: 'First Home story', content: 'Published from the empty invitation', authorId: session.userId, authorName: session.displayName,
+  });
+  expect(await records(page)).toEqual([saved]);
+  await expect(page).toHaveURL(new RegExp('/blog/' + saved.id + '$'));
 });
 
 test('admin edits another author without replacing attribution or creation metadata', async ({ page }) => {

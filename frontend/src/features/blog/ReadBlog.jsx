@@ -1,7 +1,7 @@
 /** Render escaped post text and persist only explicitly approved deletions. */
 import { useEffect, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
-import { getPosts } from '../../utils/storage.js';
+import { getPosts, getUsers } from '../../utils/storage.js';
 import { getSession } from '../../utils/auth.js';
 import { canMutatePost } from '../../utils/permissions.js';
 import { getAvatar } from '../../components/Avatar.jsx';
@@ -14,6 +14,8 @@ const focus = 'rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-
  * Resolve the current route and expose controls only to the owner or administrator.
  * Returns:
  *   Complete whitespace-preserved text or a not-found view, with safe action errors.
+ * Notes:
+ *   Resolve the built-in admin first, then current account roles; absent authors use the user avatar.
  */
 export default function ReadBlog() {
   const { id } = useParams();
@@ -39,6 +41,9 @@ export default function ReadBlog() {
     setMessage(result.reason === 'cancelled' ? '' : result.message);
   }
 
+  const authorRole = post?.authorId === 'admin' ? 'admin'
+    : getUsers().find((user) => user?.id === post?.authorId)?.role ?? 'user';
+
   return (
     <main id="main-content" className="min-h-screen bg-slate-50 px-4 py-12 font-sans text-slate-800 sm:px-6">
       <div className="mx-auto max-w-3xl">
@@ -54,10 +59,13 @@ export default function ReadBlog() {
           <article className="mt-8 min-w-0">
             <h1 className="break-words font-editorial text-4xl leading-tight">{post.title}</h1>
             <div className="mt-6 flex items-center gap-3">
-              {getAvatar(post.authorId === 'admin' ? 'admin' : 'user')}
+              {getAvatar(authorRole)}
               <div className="min-w-0">
                 <p className="break-words font-medium">{post.authorName}</p>
-                <time dateTime={Number.isNaN(Date.parse(post.createdAt)) ? undefined : post.createdAt} className="text-sm text-slate-500">
+                <time
+                  dateTime={Number.isNaN(Date.parse(post.createdAt)) ? undefined : post.createdAt}
+                  className="text-sm text-slate-500"
+                >
                   {formatPostDate(post.createdAt)}
                 </time>
               </div>

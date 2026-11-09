@@ -16,8 +16,21 @@ const roles = {
 export function Avatar({ role = 'user' }) {
   const style = Object.hasOwn(roles, role) ? roles[role] : roles.user;
   return (
-    <span role="img" aria-label={style.label} className={`inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-white ${style.color}`}>
-      <svg aria-hidden="true" viewBox="0 0 24 24" className="h-6 w-6" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+    <span
+      role="img"
+      aria-label={style.label}
+      className={`inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-white ${style.color}`}
+    >
+      <svg
+        aria-hidden="true"
+        viewBox="0 0 24 24"
+        className="h-6 w-6"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      >
         <path d={style.path} />
       </svg>
     </span>

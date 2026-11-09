@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 import { getAvatar } from '../../components/Avatar.jsx';
 import { formatPostDate } from '../../utils/dateFormat.js';
 import { canMutatePost } from '../../utils/permissions.js';
+import { getUsers } from '../../utils/storage.js';
 
 const accents = ['border-t-indigo-500', 'border-t-violet-500', 'border-t-pink-500', 'border-t-teal-500'];
 const focus = 'rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2';
@@ -16,8 +17,12 @@ const focus = 'rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-
  *   session: Current local reader identity, or null.
  * Returns:
  *   An accessible summary article, without mutation actions for other readers.
+ * Notes:
+ *   Resolve the built-in admin first, then current account roles; absent authors use the user avatar.
  */
 export default function BlogCard({ post, index = 0, session = null }) {
+  const authorRole = post.authorId === 'admin' ? 'admin'
+    : getUsers().find((user) => user?.id === post.authorId)?.role ?? 'user';
   return (
     <article className={`min-w-0 rounded-lg border border-slate-200 border-t-4 bg-white p-6 ${accents[index % 4]}`}>
       <div className="flex items-start justify-between gap-3">
@@ -38,7 +43,7 @@ export default function BlogCard({ post, index = 0, session = null }) {
         {post.content.slice(0, 120)}
       </p>
       <div className="mt-6 flex items-center gap-3">
-        {getAvatar(post.authorId === 'admin' ? 'admin' : 'user')}
+        {getAvatar(authorRole)}
         <div className="min-w-0 text-sm">
           <p className="break-words font-medium">{post.authorName}</p>
           <time dateTime={Number.isNaN(Date.parse(post.createdAt)) ? undefined : post.createdAt} className="text-slate-500">

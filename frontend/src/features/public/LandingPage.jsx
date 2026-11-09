@@ -56,7 +56,10 @@ export default function LandingPage() {
               >
                 Start Reading
               </Link>
-              <Link to="/register" className={`bg-indigo-600 px-6 py-3 text-center font-medium text-white shadow-sm hover:bg-indigo-700 ${focus}`}>
+              <Link
+                to="/register"
+                className={`bg-indigo-600 px-6 py-3 text-center font-medium text-white shadow-sm hover:bg-indigo-700 ${focus}`}
+              >
                 Get Started Free
               </Link>
             </div>

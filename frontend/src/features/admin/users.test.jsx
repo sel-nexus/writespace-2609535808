@@ -27,8 +27,9 @@ async function fill(actor, role = 'user', username = 'new-writer') {
 }
 /** Select desktop account actions through semantic row headers. */
 function row(name = 'Writer') {
-  return screen.getByRole('table').querySelector('tbody')
-    .querySelectorAll('tr')[name === 'Admin' ? 0 : name === 'Writer' ? 1 : 2];
+  return within(screen.getByRole('table')).getAllByRole('rowheader')
+    .find((header) => within(header).queryByText(name, { exact: true }))
+    .closest('tr');
 }
 beforeEach(() => {
   localStorage.clear();
@@ -162,7 +163,8 @@ for (const mobile of [false, true]) {
     mount();
     const posts = localStorage.getItem(POSTS_KEY);
     const findDelete = () => mobile
-      ? within(screen.getByRole('list', { name: 'Local account cards' })).getAllByRole('button', { name: 'Delete' })[1]
+      ? within(within(screen.getByRole('list', { name: 'Local account cards' }))
+        .getByText(writer.displayName, { exact: true }).closest('li')).getByRole('button', { name: 'Delete' })
       : within(row()).getByRole('button', { name: 'Delete' });
     const confirm = vi.spyOn(window, 'confirm').mockReturnValue(false);
     const write = vi.spyOn(Storage.prototype, 'setItem');
