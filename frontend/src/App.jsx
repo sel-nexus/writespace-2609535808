@@ -5,6 +5,7 @@ import LoginPage from './features/auth/LoginPage.jsx';
 import RegisterPage from './features/auth/RegisterPage.jsx';
 import Home from './features/blog/Home.jsx';
 import ReadBlog from './features/blog/ReadBlog.jsx';
+import WriteBlog from './features/blog/WriteBlog.jsx';
 import { ProtectedRoute } from './components/ProtectedRoute.jsx';
 import { Navbar } from './components/Navbar.jsx';
 
@@ -48,6 +49,22 @@ export default function App() {
             <>
               <Navbar />
               <ReadBlog />
+            </>
+          </ProtectedRoute>
+        } />
+        <Route path="/write" element={
+          <ProtectedRoute>
+            <>
+              <Navbar />
+              <WriteBlog />
+            </>
+          </ProtectedRoute>
+        } />
+        <Route path="/edit/:id" element={
+          <ProtectedRoute>
+            <>
+              <Navbar />
+              <WriteBlog />
             </>
           </ProtectedRoute>
         } />
