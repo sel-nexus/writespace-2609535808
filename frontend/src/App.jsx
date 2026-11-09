@@ -3,6 +3,8 @@ import { BrowserRouter, Navigate, Route, Routes, useLocation } from 'react-route
 import LandingPage from './features/public/LandingPage.jsx';
 import LoginPage from './features/auth/LoginPage.jsx';
 import RegisterPage from './features/auth/RegisterPage.jsx';
+import Home from './features/blog/Home.jsx';
+import ReadBlog from './features/blog/ReadBlog.jsx';
 import { ProtectedRoute } from './components/ProtectedRoute.jsx';
 import { Navbar } from './components/Navbar.jsx';
 
@@ -33,6 +35,22 @@ export default function App() {
         <Route path="/" element={<PublicEntry />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
+        <Route path="/blogs" element={
+          <ProtectedRoute>
+            <>
+              <Navbar />
+              <Home />
+            </>
+          </ProtectedRoute>
+        } />
+        <Route path="/blog/:id" element={
+          <ProtectedRoute>
+            <>
+              <Navbar />
+              <ReadBlog />
+            </>
+          </ProtectedRoute>
+        } />
         <Route path="*" element={
           <ProtectedRoute>
             <>
