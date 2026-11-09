@@ -119,7 +119,9 @@ for (const role of ['guest', 'user', 'admin']) {
       if (role === 'guest' && !['/login', '/register'].includes(path)) destination = '/login';
       else if (role === 'user' && ['/admin', '/users', '/login', '/register'].includes(path)) destination = '/blogs';
       else if (role === 'admin' && ['/login', '/register'].includes(path)) destination = '/admin';
-      if (role !== 'guest' && path === '/edit/missing') destination = '/blogs';
+      if (role !== 'guest' && ['/edit/missing', '/blog/missing'].includes(path)) {
+        await expect(page.getByRole('heading', { name: 'Post not found' })).toBeVisible();
+      }
       await expect(page).toHaveURL(new RegExp(destination + '$'));
       if (role === 'guest') await expect(page.getByRole('heading', { name: /Welcome back|Create your account/ })).toBeVisible();
       else await expect(page.getByRole('button', { name: 'Account menu for Writer' })).toBeVisible();

@@ -25,7 +25,10 @@ export function PublicNavbar({ session = null }) {
             <span className="max-w-40 break-words text-sm font-medium text-slate-800 sm:max-w-64">
               {session.displayName}
             </span>
-            <Link to={session.role === 'admin' ? '/admin' : '/blogs'} className={`px-3 py-2 text-sm font-medium text-indigo-600 hover:bg-indigo-50 ${focus}`}>
+            <Link
+              to={session.role === 'admin' ? '/admin' : '/blogs'}
+              className={`px-3 py-2 text-sm font-medium text-indigo-600 hover:bg-indigo-50 ${focus}`}
+            >
               Go to Dashboard
             </Link>
           </div>

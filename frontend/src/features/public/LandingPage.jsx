@@ -32,7 +32,10 @@ export default function LandingPage() {
     <div className="min-h-screen bg-slate-50 font-sans text-slate-800">
       <PublicNavbar session={session} />
       <main id="main-content">
-        <section aria-labelledby="hero-heading" className="mx-auto grid min-h-screen max-w-6xl items-center gap-12 px-4 py-20 sm:px-6 lg:grid-cols-[1.3fr_1fr] lg:gap-20">
+        <section
+          aria-labelledby="hero-heading"
+          className="mx-auto grid min-h-screen max-w-6xl items-center gap-12 px-4 py-20 sm:px-6 lg:grid-cols-[1.3fr_1fr] lg:gap-20"
+        >
           <div>
             <p className="text-sm font-medium uppercase tracking-widest text-slate-500">
               A little room for your ideas
@@ -47,7 +50,10 @@ export default function LandingPage() {
               A simple place to write what matters and discover something worth reading.
             </p>
             <div className="mt-10 flex flex-col gap-3 sm:flex-row">
-              <Link to={session ? '/blogs' : '/login'} className={`border border-slate-300 bg-white px-6 py-3 text-center font-medium hover:bg-slate-100 ${focus}`}>
+              <Link
+                to={session ? '/blogs' : '/login'}
+                className={`border border-slate-300 bg-white px-6 py-3 text-center font-medium hover:bg-slate-100 ${focus}`}
+              >
                 Start Reading
               </Link>
               <Link to="/register" className={`bg-indigo-600 px-6 py-3 text-center font-medium text-white shadow-sm hover:bg-indigo-700 ${focus}`}>
@@ -76,7 +82,16 @@ export default function LandingPage() {
         <section aria-label="Features" className="mx-auto grid max-w-6xl gap-6 px-4 py-16 sm:px-6 lg:grid-cols-3">
           {features.map((feature) => (
             <article key={feature.title} className="rounded-lg border border-slate-200 bg-white p-8">
-              <svg aria-hidden="true" viewBox="0 0 24 24" className="h-6 w-6 text-indigo-600" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+              <svg
+                aria-hidden="true"
+                viewBox="0 0 24 24"
+                className="h-6 w-6 text-indigo-600"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
                 <path d={feature.path} />
               </svg>
               <h2 className="mt-6 text-xl font-semibold">
