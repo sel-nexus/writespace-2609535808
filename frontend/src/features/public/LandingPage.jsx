@@ -115,7 +115,7 @@ export default function LandingPage() {
               No posts yet — check back soon!
             </p>
           ) : (
-            <div className="mt-8 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+            <div className="mt-8 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
               {posts.map((post) => (
                 <article key={post.id} className="rounded-lg border border-slate-200 bg-white p-6">
                   <time dateTime={Number.isNaN(Date.parse(post.createdAt)) ? undefined : post.createdAt} className="text-sm text-slate-500">

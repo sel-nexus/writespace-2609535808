@@ -39,7 +39,7 @@ async function records(page) {
 /** Select a visible desktop row using its account identity. */
 function row(page, displayName) {
   return page.getByRole('table', { name: 'Local accounts' }).getByRole('row').filter({
-    has: page.getByText(displayName, { exact: true }),
+    has: page.getByRole('rowheader').filter({ has: page.getByText(displayName, { exact: true }) }),
   });
 }
 

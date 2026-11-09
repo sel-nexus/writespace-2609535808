@@ -1,7 +1,7 @@
 FROM node:20.18.1-alpine AS build
 WORKDIR /app
 COPY package*.json ./
-RUN npm install --no-package-lock --bin-links=false
+RUN npm ci --bin-links=false
 COPY . .
 RUN node node_modules/vite/bin/vite.js build
 
